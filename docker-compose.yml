@@ -1,0 +1,36 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+
+version: '3.7'
+
+services:
+  db:
+    image: postgres:11.5-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env.db
+    ports:
+      - 5432:5432
+    restart: always
+    networks:
+      - backend
+
+  app-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - db
+    env_file: .env
+    networks:
+      - backend
+
+# Volumes
+volumes:
+  postgres_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  backend:
