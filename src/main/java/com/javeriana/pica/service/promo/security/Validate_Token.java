@@ -9,7 +9,7 @@ import org.json.JSONObject;
 public class Validate_Token {
 
     public boolean send_token(String token) throws Exception {
-        String url = "http://13.90.244.183/validate/";
+        String url = "http://52.170.232.119/validate/";
         return requestHttpGet(url, token);
     }
 
