@@ -3,6 +3,8 @@ package com.javeriana.pica.service.promo.controller;
 import com.javeriana.pica.service.promo.exception.ResourceNotFoundException;
 import com.javeriana.pica.service.promo.model.Promo;
 import com.javeriana.pica.service.promo.repository.PromoRepository;
+import com.javeriana.pica.service.promo.repository.QueryProduct;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Optional;
 
 import com.javeriana.pica.service.promo.security.Validate_Token;
@@ -43,8 +46,29 @@ public class PromoController {
     }
 
     @GetMapping("/promos/{promoId}")
-    public Optional<Promo> getPromoById(@PathVariable Long promoId) {
-        return promoRepository.findById(promoId);
+    public ResponseEntity<?> getPromoById(@PathVariable Long promoId) {
+        HashMap<String, String> mapP = new HashMap<>();
+
+        ResponseEntity<HashMap<String, String>> promo_r = promoRepository.findById(promoId)
+                .map(promo -> {
+                    mapP.put("id", promo.getId().toString());
+                    mapP.put("name", promo.getName());
+                    mapP.put("image_url", promo.getImage_url());
+                    mapP.put("initial_date", promo.getInitial_date().toString());
+                    mapP.put("end_date", promo.getEnd_date().toString());
+                    mapP.put("description", promo.getDescription());
+                    String producto = "";
+                    QueryProduct queryProduct = new QueryProduct();
+                    try {
+                        producto = queryProduct.query_elastic(promo.getId_product());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mapP.put("producto", producto);
+                    return new ResponseEntity<>(mapP, HttpStatus.OK);
+                }).orElseThrow(() -> new ResourceNotFoundException("Promo not found with id " + promoId));;
+
+        return new ResponseEntity<>(mapP, HttpStatus.OK);
     }
 
     @PutMapping("/promos/{promoId}")

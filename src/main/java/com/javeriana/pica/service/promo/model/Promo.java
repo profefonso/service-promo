@@ -24,8 +24,8 @@ public class Promo extends AuditModel {
     @Column(columnDefinition = "text")
     private String image_url;
 
-    @Column(columnDefinition = "integer")
-    private int id_product;
+    @Column(columnDefinition = "text")
+    private String id_product;
 
     @Temporal(TemporalType.DATE)
     private Date initial_date;
@@ -95,11 +95,11 @@ public class Promo extends AuditModel {
         this.estate = estate;
     }
 
-    public int getId_product() {
+    public String getId_product() {
         return id_product;
     }
 
-    public void setId_product(int id_product) {
+    public void setId_product(String id_product) {
         this.id_product = id_product;
     }
 }
